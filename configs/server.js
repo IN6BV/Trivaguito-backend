@@ -5,13 +5,16 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import { dbConnection } from './mongo.js'
+import { adminPlatform } from '../src/registro/registro.controller.js'
 import registroRoutes from '../src/registro/registro.routes.js'
+import authRoutes from '../src/auth/auth.routes.js'
 
 class Server{
     constructor(){
         this.app = express()
         this.port = process.env.PORT
-        this.registroPath = '/trivaguito/v1'
+        this.registroPath = '/trivaguito/v1/registro'
+        this.authPath = '/trivaguito/v1/auth'
 
         this.middlewares()
         this.conectarDB()
@@ -20,6 +23,7 @@ class Server{
 
     async conectarDB(){
         await dbConnection()
+        await adminPlatform()
     }
 
     middlewares(){
@@ -32,6 +36,7 @@ class Server{
 
     routes(){
         this.app.use(this.registroPath, registroRoutes)
+        this.app.use(this.authPath, authRoutes)
     }
 
     listen(){
