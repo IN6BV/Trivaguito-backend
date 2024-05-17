@@ -9,6 +9,7 @@ import { adminPlatform } from '../src/registro/registro.controller.js'
 import registroRoutes from '../src/registro/registro.routes.js'
 import authRoutes from '../src/auth/auth.routes.js'
 import hotelRoutes from '../src/hotel/hotel.routes.js'
+import habitacionRoutes from '../src/habitacion/habitacion.routes.js'
 
 class Server{
     constructor(){
@@ -17,6 +18,7 @@ class Server{
         this.registroPath = '/trivaguito/v1/registro'
         this.authPath = '/trivaguito/v1/auth'
         this.hotelPath = '/trivaguito/v1/hotel'
+        this.habitacionPath = '/trivaguito/v1/habitacion'
 
         this.middlewares()
         this.conectarDB()
@@ -40,6 +42,7 @@ class Server{
         this.app.use(this.registroPath, registroRoutes)
         this.app.use(this.authPath, authRoutes)
         this.app.use(this.hotelPath, hotelRoutes)
+        this.app.use(this.habitacionPath, habitacionRoutes)
     }
 
     listen(){

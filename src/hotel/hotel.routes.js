@@ -4,6 +4,7 @@ import { postHotel,
         getHotels,
         getHotel,
         putHotel,
+        putAddServiciosAdicionales,
         deleteHotel
 } from "./hotel.controller.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
@@ -30,6 +31,12 @@ router.put('/updateHotel/:id', [
     check('nombreHotel', 'El nombre del hotel es obligatorio').not().isEmpty(),
 ], putHotel);
 
+router.put('/addServiciosAdicionales/:id', [
+    validarJWT,
+    check('nombre', 'El nombre del servicio adicional es obligatorio').not().isEmpty(),
+    check('descripcion', 'La descripción del servicio adicional es obligatoria').not().isEmpty(),
+    check('precio', 'El precio del servicio adicional es obligatorio').not().isEmpty(),
+], putAddServiciosAdicionales);
 
 router.delete('/deleteHotel/:id', validarJWT, deleteHotel)
 

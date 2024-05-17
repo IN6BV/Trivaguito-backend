@@ -24,7 +24,7 @@ const ReservacionHabitacionSchema = mongoose.Schema({
         enum: ["RESERVADA", "PENDIENTE", "CANCELADA"],
         default: "PENDIENTE"
     },
-    listaServiciosUtilizados: {
+    listaServiciosUtilizados: [{
         servicios: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'hotel.serviciosAdicionales',
@@ -33,7 +33,7 @@ const ReservacionHabitacionSchema = mongoose.Schema({
             type: Number,
             required: [true, "La cantidad de servicios es obligatoria"]
         }
-    }
+    }]
 });
 
 export default mongoose.model('ReservacionHabitacion', ReservacionHabitacionSchema);

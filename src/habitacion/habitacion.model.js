@@ -3,11 +3,9 @@ import mongoose from "mongoose";
 const HabitacionSchema = mongoose.Schema({
     tipoHabitacion: {
         type: String,
-        required: [true, "El tipo de habitación es obligatorio"]
     },
     capacidadPersonas: {
         type: String,
-        required: [true, "La capacidad de personas es obligatoria"]
     },
     fotos: {
         type: Array,
@@ -17,13 +15,11 @@ const HabitacionSchema = mongoose.Schema({
         type: Boolean,
         default: true
     },
-    precio: {
+    precioPorNoche: {
         type: Number,
-        required: [true, "El precio de la habitación es obligatorio"]
     },
     disponibleApartir: {
         type: Date,
-        required: [true, "La fecha de disponibilidad es obligatoria"]
     },
 });
 

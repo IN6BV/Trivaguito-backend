@@ -62,6 +62,27 @@ export const putHotel = async (req, res) => {
     };
 }
 
+export const putAddServiciosAdicionales = async (req, res) => {
+    const {id} = req.params;
+    const {nombre, descripcion, precio} = req.body;
+    const adminHotel = req.user.email;
+
+    const adminHotelT = await Registro.findOne({email: adminHotel});
+    const hotelito = await Hotel.findOne({encargado: adminHotelT.uid});
+
+    if(adminHotelT.role === "HOTEL_ADMINISTRATION" && hotelito.encargado === adminHotelT.uid){
+        const hotel = await Hotel.findByIdAndUpdate(id, {$push: {serviciosAdicionales: {nombre, descripcion, precio}}});
+        const hotelActualizado = await Hotel.findById(id);
+        res.json({
+            msg: "Servicio adicional agregado con éxito",
+            hotelActualizado
+        });
+    } else {
+        return res.status(400).json({
+            msg: "No tienes permisos para agregar un servicio adicional"
+        });
+    }
+}
 
 export const deleteHotel = async (req, res) => {
     const {id} = req.params;
