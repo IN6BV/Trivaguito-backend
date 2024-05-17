@@ -1,25 +1,24 @@
 import mongoose from "mongoose";
 
 const HotelSchema = mongoose.Schema({
+    encargado: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Registro'
+    },
     nombreHotel: {
         type: String,
-        required: [true, "El nombre del hotel es obligatorio"]
     },
     direccion: {
         type: String,
-        required: [true, "La dirección del hotel es obligatoria"]
     },
     categoria: {
         type: String,
-        required: [true, "La categoría es obligatoria"]
     },
     rangoPrecios: {
         type: String,
-        required: [true, "El rango de precios es obligatorio"]
     },
     comodidades: {
         type: String,
-        required: [true, "Las comodidades son obligatorias"]
     },
     fotosHotel: {
         type: Array,
@@ -30,7 +29,7 @@ const HotelSchema = mongoose.Schema({
         ref: 'Habitacion'
     },
     historialOcupacion: {
-        type: number,
+        type: Number,
         default: 0
     },
     historialEventos:{
@@ -38,21 +37,18 @@ const HotelSchema = mongoose.Schema({
         ref: 'Eventos'
     },
     demandaHotel: {
-        type: number,
+        type: Number,
         default: 0
     },
     serviciosAdicionales: {
         nombre: {
-            type: String,
-            required: [true, "El nombre del servicio adicional es obligatorio"]
+            type: String
         },
         descripcion: {
             type: String,
-            required: [true, "La descripción del servicio adicional es obligatoria"]
         },
         precio: {
-            type: number,
-            required: [true, "El precio del servicio adicional es obligatorio"]
+            type: Number,
         }
     },
     estado: {

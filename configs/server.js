@@ -8,6 +8,7 @@ import { dbConnection } from './mongo.js'
 import { adminPlatform } from '../src/registro/registro.controller.js'
 import registroRoutes from '../src/registro/registro.routes.js'
 import authRoutes from '../src/auth/auth.routes.js'
+import hotelRoutes from '../src/hotel/hotel.routes.js'
 
 class Server{
     constructor(){
@@ -15,6 +16,7 @@ class Server{
         this.port = process.env.PORT
         this.registroPath = '/trivaguito/v1/registro'
         this.authPath = '/trivaguito/v1/auth'
+        this.hotelPath = '/trivaguito/v1/hotel'
 
         this.middlewares()
         this.conectarDB()
@@ -37,6 +39,7 @@ class Server{
     routes(){
         this.app.use(this.registroPath, registroRoutes)
         this.app.use(this.authPath, authRoutes)
+        this.app.use(this.hotelPath, hotelRoutes)
     }
 
     listen(){
