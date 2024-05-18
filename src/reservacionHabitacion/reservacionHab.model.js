@@ -4,20 +4,16 @@ const ReservacionHabitacionSchema = mongoose.Schema({
     idUsuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Registro',
-        required: [true, "El id del usuario es obligatorio"]
     },
     idHabitacion: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Habitacion',
-        required: [true, "El id de la habitación es obligatorio"]
     },
     fechaInicio: {
         type: Date,
-        required: [true, "La fecha de inicio es obligatoria"]
     },
     fechaFin: {
         type: Date,
-        required: [true, "La fecha de fin es obligatoria"]
     },
     estadoReserva: {
         type: String,
@@ -27,13 +23,12 @@ const ReservacionHabitacionSchema = mongoose.Schema({
     listaServiciosUtilizados: [{
         servicios: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'hotel.serviciosAdicionales',
-        },
-        cantidad: {
-            type: Number,
-            required: [true, "La cantidad de servicios es obligatoria"]
+            ref: 'hotel.serviciosAdicionales._id',
         }
-    }]
+    }],
+    totalReserva: {
+        type: Number,
+    }
 });
 
 export default mongoose.model('ReservacionHabitacion', ReservacionHabitacionSchema);

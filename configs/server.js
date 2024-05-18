@@ -10,6 +10,7 @@ import registroRoutes from '../src/registro/registro.routes.js'
 import authRoutes from '../src/auth/auth.routes.js'
 import hotelRoutes from '../src/hotel/hotel.routes.js'
 import habitacionRoutes from '../src/habitacion/habitacion.routes.js'
+import reservacionRoutes from '../src/reservacionHabitacion/reservacionHab.routes.js'
 
 class Server{
     constructor(){
@@ -19,6 +20,7 @@ class Server{
         this.authPath = '/trivaguito/v1/auth'
         this.hotelPath = '/trivaguito/v1/hotel'
         this.habitacionPath = '/trivaguito/v1/habitacion'
+        this.reservacionPath = '/trivaguito/v1/reservacion'
 
         this.middlewares()
         this.conectarDB()
@@ -43,6 +45,7 @@ class Server{
         this.app.use(this.authPath, authRoutes)
         this.app.use(this.hotelPath, hotelRoutes)
         this.app.use(this.habitacionPath, habitacionRoutes)
+        this.app.use(this.reservacionPath, reservacionRoutes)
     }
 
     listen(){
