@@ -74,7 +74,7 @@ export const postReservacionHab = async (req, res) => {
         await habitacion.save();
 
         res.status(201).json({
-            msg: "Reservación registrada con éxito",
+            msg: "Reservación registrada con éxito, ahora no se puede modificar nada, si desea cancelarla, comuníquese con el hotel",
             newReservacionHab
         });
     }

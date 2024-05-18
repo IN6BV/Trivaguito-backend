@@ -28,18 +28,10 @@ const HotelSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Habitacion'
     }],
-    historialOcupacion: {
-        type: Number,
-        default: 0
-    },
-    historialEventos:{
+    historialEventos:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Eventos'
-    },
-    demandaHotel: {
-        type: Number,
-        default: 0
-    },
+    }],
     serviciosAdicionales: [{
         nombre: {
             type: String
@@ -51,6 +43,10 @@ const HotelSchema = mongoose.Schema({
             type: Number,
         }
     }],
+    usoHotelPorEvento:{
+        type: Number,
+        default: 0
+    },
     estado: {
         type: Boolean,
         default: true

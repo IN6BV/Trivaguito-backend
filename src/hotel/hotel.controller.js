@@ -2,7 +2,7 @@ import Hotel from "./hotel.model.js";
 import Registro from "../registro/registro.model.js";
 
 export const postHotel = async (req, res) => {
-    const {nombreHotel, direccion, categoria, rangoPrecios, comodidades, fotosHotel, nombre, descripcion, precio } = req.body;
+    const {nombreHotel, direccion, categoria, rangoPrecios, comodidades, fotosHotel, usoHotelPorEvento, nombre, descripcion, precio } = req.body;
     const adminHotel = req.user.email;
 
     const adminHotelT = await Registro.findOne({email: adminHotel});
@@ -13,7 +13,7 @@ export const postHotel = async (req, res) => {
         });
     } else {
         const serviciosAdicionales = {nombre, descripcion, precio};
-        const newHotel = new Hotel({encargado: adminHotelT.uid, nombreHotel, direccion, categoria, rangoPrecios, comodidades, fotosHotel, serviciosAdicionales: serviciosAdicionales });
+        const newHotel = new Hotel({encargado: adminHotelT.uid, nombreHotel, direccion, categoria, rangoPrecios, comodidades, fotosHotel, usoHotelPorEvento, serviciosAdicionales: serviciosAdicionales });
         await newHotel.save();
         res.status(201).json({
             msg: "Hotel registrado con éxito",

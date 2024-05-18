@@ -1,32 +1,29 @@
 import mongoose from "mongoose";
 
 const EventosSchema = mongoose.Schema({
-    idHotel: {
+    idOrganizador: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hotel',
-        required: [true, "El id del hotel es obligatorio"]
+        ref: 'Registro',
     },
     nombreEvento: {
         type: String,
         required: [true, "El nombre del evento es obligatorio"]
     },
-    fechaEvento: {
+    fechaHoraEvento: {
         type: Date,
         required: [true, "La fecha del evento es obligatoria"]
     },
-    horaEvento: {
-        type: String,
-        required: [true, "La hora del evento es obligatoria"]
-    },
-    listaServiciosUtilizados: {
+    listaServiciosUtilizados: [{
         servicios: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'hotel.serviciosAdicionales',
+            ref: 'hotel.serviciosAdicionales._id',
         },
         cantidad: {
             type: Number,
-            required: [true, "La cantidad de servicios es obligatoria"]
         }
+    }],
+    totalEvento: {
+        type: Number,
     }
 });
 
