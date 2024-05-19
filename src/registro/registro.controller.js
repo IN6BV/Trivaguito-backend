@@ -24,7 +24,7 @@ export const adminPlatform = async (req, res) => {
 }
 
 export const postRegistro = async (req, res) => {
-    const { nombre, apellido, foto, email, password } = req.body;
+    const { nombre, apellido, foto, email, password, role } = req.body;
     const salt = bcryptjs.genSaltSync();
     const encryptedPassword = bcryptjs.hashSync(password, salt);
 
