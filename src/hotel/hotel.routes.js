@@ -5,7 +5,8 @@ import { postHotel,
         getHotel,
         putHotel,
         putAddServiciosAdicionales,
-        deleteHotel
+        deleteHotel,
+        getHotelByReservations
 } from "./hotel.controller.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 
@@ -21,7 +22,7 @@ router.post('/addHotel', [
     check('fotosHotel', 'Las fotos del hotel son obligatorias').not().isEmpty(),
     check('serviciosAdicionales', 'Los servicios adicionales son obligatorios').not().isEmpty(),
 ], postHotel);
-
+router.get('/getHotelsForReport', getHotelByReservations)
 router.get('/', getHotels);
 
 router.get('/byId/:id', getHotel);

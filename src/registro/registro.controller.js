@@ -29,7 +29,7 @@ export const postRegistro = async (req, res) => {
     const encryptedPassword = bcryptjs.hashSync(password, salt);
 
     const nuevoRegistro = new Registro({
-        nombre, apellido, foto,
+        nombre, apellido, foto, role,
         email: email.toLowerCase(),
         password: encryptedPassword
     });

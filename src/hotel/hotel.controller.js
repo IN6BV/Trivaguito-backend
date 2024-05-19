@@ -1,4 +1,6 @@
 import Hotel from "./hotel.model.js";
+import ReservacionHabitacion from '../reservacionHabitacion/reservacionHab.model.js'
+import Habitacion from '../habitacion/habitacion.model.js'
 import Registro from "../registro/registro.model.js";
 
 export const postHotel = async (req, res) => {
@@ -36,6 +38,79 @@ export const getHotel = async (req, res) => {
         hotel
     });
 }
+
+export const getHotelByReservations = async (req, res)=>{
+    try {
+        const hotels = await Hotel.aggregate([
+            // 1. Lookup 'habitacions' collection to get rooms information
+            {
+                $lookup: {
+                    from: 'habitacions', 
+                    localField: 'habitaciones', 
+                    foreignField: '_id', 
+                    as: 'rooms' 
+                }
+            },
+            // 2. Unwind 'rooms' array to denormalize data
+            {
+                $unwind: '$rooms'
+            },
+            // 3. Lookup 'reservacionhabitacions' to get reservations information
+            {
+                $lookup: {
+                    from: 'reservacionhabitacions', 
+                    localField: 'rooms._id',
+                    foreignField: 'idHabitacion',
+                    as: 'reservations' 
+                }
+            },
+            // 4. Unwind 'reservations' array to denormalize data
+            {
+                $unwind: {
+                    path: '$reservations', 
+                    preserveNullAndEmptyArrays: true 
+                }
+            },
+            // 5. Group by hotel fields and calculate total reservations
+            {
+                $group: {
+                    _id: '$_id', 
+                    nombreHotel: { $first: '$nombreHotel' },
+                    direccion: { $first: '$direccion' },
+                    categoria: { $first: '$categoria' },
+                    rangoPrecios: { $first: '$rangoPrecios' },
+                    comodidades: { $first: '$comodidades' },
+                    fotosHotel: { $first: '$fotosHotel' },
+                    historialEventos: { $first: '$historialEventos' },
+                    serviciosAdicionales: { $first: '$serviciosAdicionales' },
+                    usoHotelPorEvento: { $first: '$usoHotelPorEvento' },
+                    estado: { $first: '$estado' },
+                    // Count total reservations based on 'estadoReserva' field
+                    totalReservations: { 
+                        $sum: { 
+                            $cond: [{ $eq: ['$reservations.estadoReserva', 'RESERVADA'] }, 1, 0] 
+                        } 
+                    }
+                }
+            },
+            // 6. Sort hotels by total reservations in descending order
+            {
+                $sort: { totalReservations: -1 } 
+            }
+        ]);
+
+        res.json({
+            hotels
+        });
+    } catch (e) {
+        console.error("Error obteniendo los hoteles por reservaciones:", error);
+        res.status(500).json({
+            message: 'Error obteniendo los hoteles por reservaciones',
+            error: error.message
+        });
+    }
+}
+
 
 export const putHotel = async (req, res) => {
     const {id} = req.params;

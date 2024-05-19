@@ -41,10 +41,4 @@ const RegistroSchema = mongoose.Schema({
     }
 });
 
-RegistroSchema.methods.toJSON = function(){
-    const {__v, password, _id, historialReservas, historialServiciosUtilizados, role, estado, foto, ...registro} = this.toObject();
-    registro.uid = _id;
-    return registro;
-}
-
 export default mongoose.model('registroUsuario', RegistroSchema);
