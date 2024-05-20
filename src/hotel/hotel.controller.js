@@ -128,23 +128,26 @@ export const putHotel = async (req, res) => {
         });
     };
 }
-export const getAllReservationsFromHotel = async (req, res)=>{
+
+export const getAllReservationsFromHotel = async (req, res) => {
     try {
-        const {id} = req.params
-        const hotel = await Hotel.findById(id).populate('habitaciones')
-        if(!hotel){
-            return res.status(404).json({message: 'Hotel no encontrado'})
-        }
-        const rooms = hotel.habitaciones; 
+        const { id } = req.params;
 
-        if (!rooms || rooms.length === 0) {
-            return res.status(404).json({ message: 'Habitaciones not found' });
+        const hotel = await Hotel.findById(id);
+
+        if (!hotel) {
+            return res.status(404).json({ message: 'Hotel no encontrado' });
         }
 
-        const reservations = await ReservacionHabitacion.find({ idHabitacion: { $in: rooms.map(room => room._id) } })
-            .populate('idUsuario')
-            .populate('idHabitacion');
-        
+        const habitaciones = hotel.habitaciones;
+
+        if (!habitaciones || habitaciones.length === 0) {
+            return res.status(404).json({ message: 'Habitaciones no encontradas en este hotel' });
+        }
+
+        const reservationIds = habitaciones.map(habitacion => habitacion._id);
+        const reservations = await ReservacionHabitacion.find({ idHabitacion: { $in: reservationIds } });
+
         if (!reservations || reservations.length === 0) {
             return res.status(404).json({ message: 'Reservaciones no encontradas' });
         }
@@ -153,12 +156,7 @@ export const getAllReservationsFromHotel = async (req, res)=>{
             _id: reservation._id,
             idUsuario: reservation.idUsuario,
             idHabitacion: {
-                id: reservation.idHabitacion._id,
-                tipoHabitacion: reservation.idHabitacion.tipoHabitacion,
-                capacidadPersonas: reservation.idHabitacion.capacidadPersonas,
-                disponibilidad: reservation.idHabitacion.disponibilidad,
-                precioPorNoche: reservation.idHabitacion.precioPorNoche,
-                disponibleApartir: reservation.idHabitacion.disponibleApartir,
+                _id: reservation.idHabitacion,
             },
             fechaInicio: reservation.fechaInicio,
             fechaFin: reservation.fechaFin,
@@ -173,9 +171,10 @@ export const getAllReservationsFromHotel = async (req, res)=>{
         });
     } catch (e) {
         console.error("No se obtuvieron las reservaciones: ", e)
-        res.status(500).json({message: 'No se obtuvieron las reservaciones', error: e.message})
+        res.status(500).json({ message: 'No se obtuvieron las reservaciones', error: e.message })
     }
 }
+
 export const getAllUsersWithReservationsInHotel = async (req, res) => {
     try {
         const { id } = req.params;

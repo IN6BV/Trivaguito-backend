@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const HotelSchema = mongoose.Schema({
     encargado: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Registro'
+        ref: 'registro'
     },
     nombreHotel: {
         type: String,
@@ -26,11 +26,11 @@ const HotelSchema = mongoose.Schema({
     },
     habitaciones: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Habitacion'
+        ref: 'habitacion'
     }],
     historialEventos:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Eventos'
+        ref: 'eventos'
     }],
     serviciosAdicionales: [{
         nombre: {
