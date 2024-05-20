@@ -128,7 +128,80 @@ export const putHotel = async (req, res) => {
         });
     };
 }
+export const getAllReservationsFromHotel = async (req, res)=>{
+    try {
+        const {id} = req.params
+        const hotel = await Hotel.findById(id).populate('habitaciones')
+        if(!hotel){
+            return res.status(404).json({message: 'Hotel no encontrado'})
+        }
+        const roomsId = hotel.habitaciones.map(room => room._id)
+        const reservations = await ReservacionHabitacion.find({
+            idHabitacion: {$in: roomsId}
+        }).populate('idUsuario').populate('idHabitacion')
+        res.status(200).json({
+            message: 'Reservaciones encontradas correctamente',
+            reservations
+        })
+    } catch (e) {
+        console.error("No se obtuvieron las reservaciones: ", e)
+        res.status(500).json({message: 'No se obtuvieron las reservaciones', error: e.message})
+    }
+}
+export const getAllUsersWithReservationsInHotel = async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        const hotel = await Hotel.findById(id).populate('habitaciones');
+
+        if (!hotel) {
+            return res.status(404).json({ message: 'Hotel no encontrado' });
+        }
+
+        const roomIds = hotel.habitaciones.map(room => room._id);
+
+        const reservations = await ReservacionHabitacion.find({
+            idHabitacion: { $in: roomIds }
+        }).populate('idUsuario', 'nombre email');
+
+        const users = reservations.map(reservation => reservation.idUsuario);
+        const uniqueUsers = [...new Set(users.map(user => user._id.toString()))]
+            .map(id => users.find(user => user._id.toString() === id));
+
+        res.status(200).json({
+            message: 'Usuarios con reservaciones encontrados correctamente',
+            users: uniqueUsers
+        });
+    } catch (error) {
+        console.error("Error encontrando los usuarios con reservacion", error);
+        res.status(500).json({ message: 'Error obteniendo usuarios con reservaciones', error: error.message });
+    }
+};
+export const getHabitationBookOrNot = async (req, res) =>{
+    try {
+        const { id } = req.params
+        const hotel = await Hotel.findById(id).populate('habitaciones')
+        if(!hotel){
+            return res.status(404).json({ message: 'Hotel no encontrado' });
+        }
+        const habitacionesDisponibles = hotel.habitaciones.map(habitacion => ({
+            id: habitacion._id,
+            tipoHabitacion: habitacion.tipoHabitacion,
+            capacidadPersonas: habitacion.capacidadPersonas,
+            disponibilidad: habitacion.disponibilidad,
+            precioPorNoche: habitacion.precioPorNoche,
+            disponibleApartir: habitacion.disponibleApartir
+        }));
+
+        res.status(200).json({
+            message: 'Disponibilidad de habitaciones obtenida correctamente',
+            habitacionesDisponibles
+        });
+    } catch (error) {
+        console.error("Error obteniendo la disponibilidad de las habitaciones: ", error);
+        res.status(500).json({ message: 'Error obteniendo la disponibilidad de las habitaciones', error: error.message });
+    }
+}
 export const putAddServiciosAdicionales = async (req, res) => {
     const {id} = req.params;
     const {nombre, descripcion, precio} = req.body;

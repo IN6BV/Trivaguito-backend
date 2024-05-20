@@ -6,7 +6,8 @@ import { postHotel,
         putHotel,
         putAddServiciosAdicionales,
         deleteHotel,
-        getHotelByReservations
+        getHotelByReservations,
+        getAllReservationsFromHotel
 } from "./hotel.controller.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 
@@ -26,7 +27,7 @@ router.get('/getHotelsForReport', getHotelByReservations)
 router.get('/', getHotels);
 
 router.get('/byId/:id', getHotel);
-
+router.get('/getHotelReservations/:id', getAllReservationsFromHotel)
 router.put('/updateHotel/:id', [
     validarJWT,
     check('nombreHotel', 'El nombre del hotel es obligatorio').not().isEmpty(),
