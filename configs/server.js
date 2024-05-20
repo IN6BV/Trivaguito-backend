@@ -12,6 +12,7 @@ import hotelRoutes from '../src/hotel/hotel.routes.js'
 import habitacionRoutes from '../src/habitacion/habitacion.routes.js'
 import reservacionRoutes from '../src/reservacionHabitacion/reservacionHab.routes.js'
 import eventosRoutes from '../src/eventos/eventos.routes.js'
+import listaRoutes from '../src/listaEspera/listaEspera.routes.js'
 
 class Server{
     constructor(){
@@ -23,6 +24,7 @@ class Server{
         this.habitacionPath = '/trivaguito/v1/habitacion'
         this.reservacionPath = '/trivaguito/v1/reservacion'
         this.eventosPath = '/trivaguito/v1/eventos'
+        this.listaPath = '/trivaguito/v1/listaEspera'
 
         this.middlewares()
         this.conectarDB()
@@ -49,6 +51,7 @@ class Server{
         this.app.use(this.habitacionPath, habitacionRoutes)
         this.app.use(this.reservacionPath, reservacionRoutes)
         this.app.use(this.eventosPath, eventosRoutes)
+        this.app.use(this.listaPath, listaRoutes)
     }
 
     listen(){
