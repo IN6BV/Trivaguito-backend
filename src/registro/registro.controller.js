@@ -129,3 +129,12 @@ export const putUserAAdminHotel = async (req, res) => {
     }
 }
 
+
+export const listarUsuariosPorRol = async (req, res) => {
+    const { role } = req.params;
+    const registros = await Registro.find({ role });
+    res.status(200).json({
+        msg: "Lista de registros",
+        registros
+    })
+}

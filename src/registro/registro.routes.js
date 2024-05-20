@@ -5,7 +5,8 @@ import { postRegistro,
         getRegistro,
         putRegistro,
         deleteRegistro,
-        putUserAAdminHotel} from "./registro.controller.js";
+        putUserAAdminHotel,
+        listarUsuariosPorRol} from "./registro.controller.js";
 import {validarJWT} from "../middlewares/validar-jwt.js";
 
 const router = Router();
@@ -40,4 +41,6 @@ router.put('/updateRole/:id', [
     validarJWT
 ], putUserAAdminHotel);
 
+router.get('/byRole/:role', [
+], listarUsuariosPorRol);
 export default router;
