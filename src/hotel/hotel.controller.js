@@ -135,14 +135,42 @@ export const getAllReservationsFromHotel = async (req, res)=>{
         if(!hotel){
             return res.status(404).json({message: 'Hotel no encontrado'})
         }
-        const roomsId = hotel.habitaciones.map(room => room._id)
-        const reservations = await ReservacionHabitacion.find({
-            idHabitacion: {$in: roomsId}
-        }).populate('idUsuario').populate('idHabitacion')
+        const rooms = hotel.habitaciones; 
+
+        if (!rooms || rooms.length === 0) {
+            return res.status(404).json({ message: 'Habitaciones not found' });
+        }
+
+        const reservations = await ReservacionHabitacion.find({ idHabitacion: { $in: rooms.map(room => room._id) } })
+            .populate('idUsuario')
+            .populate('idHabitacion');
+        
+        if (!reservations || reservations.length === 0) {
+            return res.status(404).json({ message: 'Reservaciones no encontradas' });
+        }
+
+        const reservationsWithDetails = reservations.map(reservation => ({
+            _id: reservation._id,
+            idUsuario: reservation.idUsuario,
+            idHabitacion: {
+                id: reservation.idHabitacion._id,
+                tipoHabitacion: reservation.idHabitacion.tipoHabitacion,
+                capacidadPersonas: reservation.idHabitacion.capacidadPersonas,
+                disponibilidad: reservation.idHabitacion.disponibilidad,
+                precioPorNoche: reservation.idHabitacion.precioPorNoche,
+                disponibleApartir: reservation.idHabitacion.disponibleApartir,
+            },
+            fechaInicio: reservation.fechaInicio,
+            fechaFin: reservation.fechaFin,
+            estadoReserva: reservation.estadoReserva,
+            listaServiciosUtilizados: reservation.listaServiciosUtilizados,
+            totalReserva: reservation.totalReserva
+        }));
+
         res.status(200).json({
             message: 'Reservaciones encontradas correctamente',
-            reservations
-        })
+            reservations: reservationsWithDetails
+        });
     } catch (e) {
         console.error("No se obtuvieron las reservaciones: ", e)
         res.status(500).json({message: 'No se obtuvieron las reservaciones', error: e.message})
@@ -164,9 +192,32 @@ export const getAllUsersWithReservationsInHotel = async (req, res) => {
             idHabitacion: { $in: roomIds }
         }).populate('idUsuario', 'nombre email');
 
-        const users = reservations.map(reservation => reservation.idUsuario);
-        const uniqueUsers = [...new Set(users.map(user => user._id.toString()))]
-            .map(id => users.find(user => user._id.toString() === id));
+        const usersMap = new Map();
+        reservations.forEach(reservation => {
+            const userId = reservation.idUsuario._id.toString();
+            if (!usersMap.has(userId)) {
+                usersMap.set(userId, {
+                    ...reservation.idUsuario.toObject(),
+                    reservations: []
+                });
+            }
+            usersMap.get(userId).reservations.push({
+                _id: reservation._id,
+                idHabitacion: {
+                    id: reservation.idHabitacion._id,
+                    tipoHabitacion: reservation.idHabitacion.tipoHabitacion,
+                    capacidadPersonas: reservation.idHabitacion.capacidadPersonas,
+                    disponibilidad: reservation.idHabitacion.disponibilidad,
+                    precioPorNoche: reservation.idHabitacion.precioPorNoche,
+                    disponibleApartir: reservation.idHabitacion.disponibleApartir,
+                },
+                fechaInicio: reservation.fechaInicio,
+                fechaFin: reservation.fechaFin,
+                estadoReserva: reservation.estadoReserva,
+                listaServiciosUtilizados: reservation.listaServiciosUtilizados,
+                totalReserva: reservation.totalReserva
+            });
+        });
 
         res.status(200).json({
             message: 'Usuarios con reservaciones encontrados correctamente',
