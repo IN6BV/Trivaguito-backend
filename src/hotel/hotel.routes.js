@@ -29,7 +29,7 @@ router.get('/getHotelsForReport', getHotelByReservations)
 router.get('/', getHotels);
 
 router.get('/byId/:id', getHotel);
-router.get('/getHotelReservations/:id', getAllReservationsFromHotel)
+router.get('/getHotelReservations', [validarJWT], getAllReservationsFromHotel)
 router.get('/getAllUsersWithReservationsInHotel/:id', getAllUsersWithReservationsInHotel)
 router.get('/getHabitationBookOrNot/:id', getHabitationBookOrNot)
 router.put('/updateHotel/:id', [
