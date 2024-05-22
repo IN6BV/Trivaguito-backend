@@ -44,3 +44,22 @@ console.log(listaEsperaConInfoUsuario);
 
 res.json(listaEsperaConInfoUsuario);
 };
+
+export const deleteListaEspera = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user.uid;
+
+    const usuario = await Registro.findById(user);
+
+    if (usuario.role === "PLATFORM_MANAGER") {
+        const listaEspera = await ListaEspera.findByIdAndDelete(id);
+        res.status(200).json({
+            msg: "Usuario eliminado de la lista de espera",
+            listaEspera
+        });
+    } else {
+        res.status(401).json({
+            msg: "No autorizado"
+        });
+    }
+}
