@@ -242,9 +242,14 @@ export const putHotel = async (req, res) => {
 
 export const getAllUsersWithReservationsInHotel = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const hotel = await Hotel.findById(id).populate('habitaciones');
+    const adminHotel = req.user.email;
+    const adminHotelT = await Registro.findOne({ email: adminHotel });
+    if (adminHotelT.role !== 'HOTEL_ADMINISTRATION') {
+        return res.status(400).json({
+          msg: 'No tienes permisos para registrar un hotel',
+        });
+    }
+    const hotel = await Hotel.findOne({ encargado: adminHotelT.uid });
 
     if (!hotel) {
       return res.status(404).json({ message: 'Hotel no encontrado' });
@@ -262,84 +267,51 @@ export const getAllUsersWithReservationsInHotel = async (req, res) => {
     const reservations = await ReservacionHabitacion.find({
       idHabitacion: { $in: reservationIds },
     });
+
     if (!reservations || reservations.length === 0) {
       return res.status(404).json({ message: 'Reservaciones no encontradas' });
     }
 
-    const userIds = [
-      ...new Set(
-        reservations.map((reservation) => reservation.idUsuario.toString())
-      ),
-    ];
-    const users = await Registro.find({ _id: { $in: userIds } });
-
-    const usersMap = new Map(
-      users.map((user) => [
-        user._id.toString(),
-        {
-          _id: user._id,
-          nombre: user.nombre,
-          email: user.email,
-          reservations: [],
-        },
-      ])
-    );
-
-    reservations.forEach((reservation) => {
-      const userId = reservation.idUsuario.toString();
-      if (usersMap.has(userId)) {
-        usersMap.get(userId).reservations.push({
+    const userIds = reservations.map((reservation) => reservation.idUsuario);
+    const uniqueUserIds = [...new Set(userIds)];
+    const usersMap = new Map();
+    for (let id of uniqueUserIds) {
+      const user = await Registro.findById(id);
+      if (user) {
+        usersMap.set(id.toString(), user);
+      }
+    }
+    const reservationsWithDetails = reservations.map((reservation) => {
+        const user = usersMap.get(reservation.idUsuario.toString());
+        return {
           _id: reservation._id,
+          idUsuario: user
+            ? {
+                _id: user._id,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                email: user.email,
+                foto: user.foto
+              }
+            : null,
           idHabitacion: reservation.idHabitacion,
           fechaInicio: reservation.fechaInicio,
           fechaFin: reservation.fechaFin,
           estadoReserva: reservation.estadoReserva,
           listaServiciosUtilizados: reservation.listaServiciosUtilizados,
           totalReserva: reservation.totalReserva,
-        });
-      }
-    });
-
-    res.status(200).json({
-      message: 'Usuarios con reservaciones encontrados correctamente',
-      users: Array.from(usersMap.values()),
-    });
-  } catch (error) {
-    console.error('Error encontrando los usuarios con reservacion', error);
+        };
+      });
+  
+      res.status(200).json({
+        message: 'Reservaciones encontradas correctamente',
+        reservations: reservationsWithDetails,
+      });
+  } catch (e) {
+    console.error('No se obtuvieron las reservaciones: ', e);
     res.status(500).json({
-      message: 'Error obteniendo usuarios con reservaciones',
-      error: error.message,
-    });
-  }
-};
-export const getHabitationBookOrNot = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const hotel = await Hotel.findById(id).populate('habitaciones');
-    if (!hotel) {
-      return res.status(404).json({ message: 'Hotel no encontrado' });
-    }
-    const habitacionesDisponibles = hotel.habitaciones.map((habitacion) => ({
-      id: habitacion._id,
-      tipoHabitacion: habitacion.tipoHabitacion,
-      capacidadPersonas: habitacion.capacidadPersonas,
-      disponibilidad: habitacion.disponibilidad,
-      precioPorNoche: habitacion.precioPorNoche,
-      disponibleApartir: habitacion.disponibleApartir,
-    }));
-
-    res.status(200).json({
-      message: 'Disponibilidad de habitaciones obtenida correctamente',
-      habitacionesDisponibles,
-    });
-  } catch (error) {
-    console.error(
-      'Error obteniendo la disponibilidad de las habitaciones: ',
-      error
-    );
-    res.status(500).json({
-      message: 'Error obteniendo la disponibilidad de las habitaciones',
-      error: error.message,
+      message: 'No se obtuvieron las reservaciones',
+      error: e.message,
     });
   }
 };
@@ -369,7 +341,6 @@ export const putAddServiciosAdicionales = async (req, res) => {
     });
   }
 };
-
 export const deleteHotel = async (req, res) => {
   const { id } = req.params;
   const adminHotel = req.user.email;
