@@ -105,7 +105,8 @@ export const putHabitacion = async (req, res) => {
     const habitacionActualizada = await Habitacion.findById(id);
     res.json({
       msg: 'Habitación modificada con éxito',
-      habitacionActualizada,
+      habitacion,
+      habitacionActualizada
     });
   }
 };
