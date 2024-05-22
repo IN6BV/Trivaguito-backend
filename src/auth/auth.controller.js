@@ -7,7 +7,7 @@ export const login = async (req, res) => {
 
     try {
         //verificar si el email existe:
-            const user = await Registro.findOne({ email: email.toLowerCase() });
+        const user = await Registro.findOne({ email: email.toLowerCase() });
 
         if (user && (await bcryptjs.compare(password, user.password))) {
             const token = await generarJWT(user.id, user.email)
@@ -15,7 +15,11 @@ export const login = async (req, res) => {
             res.status(200).json({
                 msg: "Login Ok!!!",
                 userDetails: {
+                    id: user.id,
                     nombre: user.nombre,
+                    apellido: user.apellido,
+                    foto: user.foto,
+                    email: user.email,
                     token: token,
                     role: user.role
                 },
