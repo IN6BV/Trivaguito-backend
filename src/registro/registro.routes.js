@@ -6,7 +6,8 @@ import { postRegistro,
         putRegistro,
         deleteRegistro,
         putUserAAdminHotel,
-        listarUsuariosPorRol} from "./registro.controller.js";
+        listarUsuariosPorRol,
+        getRegistroHoteles} from "./registro.controller.js";
 import {validarJWT} from "../middlewares/validar-jwt.js";
 
 const router = Router();
@@ -20,7 +21,8 @@ router.post('/add', [
 ], postRegistro);
 
 router.get('/', getRegistros);
-
+router.get("/adminHotel", getRegistroHoteles)
+router.get('byId/:id', getRegistro)
 router.get('/byId/:id', getRegistro);
 
 router.put('/update/:id', [

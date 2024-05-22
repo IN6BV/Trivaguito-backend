@@ -42,7 +42,14 @@ export const postRegistro = async (req, res) => {
 }
 
 export const getRegistros = async (req, res) => {
-    const registros = await Registro.find();
+    const registros = await Registro.find({role: "USER"});
+    res.status(200).json({
+        msg: "Lista de registros",
+        registros
+    })
+}
+export const getRegistroHoteles = async (req, res) =>{
+    const registros = await Registro.find({role:"HOTEL_ADMINISTRATION"})
     res.status(200).json({
         msg: "Lista de registros",
         registros
