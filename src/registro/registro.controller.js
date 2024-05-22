@@ -1,7 +1,6 @@
 import Registro from "./registro.model.js";
 import bcryptjs from "bcryptjs";
-import { response } from "express";
-import mongoose from "mongoose";
+import ListaEspera from "../listaEspera/listaEspera.model.js";
 
 export const adminPlatform = async (req, res) => {
 
@@ -51,8 +50,9 @@ export const getRegistros = async (req, res) => {
 }
 
 export const getRegistro = async (req, res) => {
+    console.log("entro en getRegistro");
     const { id } = req.params;
-    console.log(id);
+    console.log(id, "ia");
     const registro = await Registro.findById(id);
     res.status(200).json({
         msg: "Registro encontrado",
@@ -61,31 +61,24 @@ export const getRegistro = async (req, res) => {
 }
 
 export const putRegistro = async (req, res) => {
+    console.log("entro en putRegistro");
     const { id } = req.params;
-    const usuario = req.user.email;
+    console.log(id, "id putRegistro");
 
-    const user = await Registro.findById(id);
+    const { _id, password, historialReservas, historialServiciosUtilizados, role, estado, ...resto } = req.body;
 
-    if (user.email === usuario) {
-        const { _id, password, historialReservas, historialServiciosUtilizados, role, estado, ...resto } = req.body;
-
-        if (password) {
-            const salt = bcryptjs.genSaltSync();
-            resto.password = bcryptjs.hashSync(password, salt);
-        }
-
-        const registro = await Registro.findByIdAndUpdate(id, resto);
-        const registroActualizado = await Registro.findById(id);
-
-        res.json({
-            msg: "Registro actualizado",
-            registroActualizado
-        });
-    } else {
-        res.status(401).json({
-            msg: "No autorizado"
-        });
+    if (password) {
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync(password, salt);
     }
+
+    const registro = await Registro.findByIdAndUpdate(id, resto);
+    const registroActualizado = await Registro.findById(id);
+
+    res.json({
+        msg: "Registro actualizado",
+        registroActualizado
+    });
 }
 
 export const deleteRegistro = async (req, res) => {
@@ -113,8 +106,18 @@ export const putUserAAdminHotel = async (req, res) => {
 
     if (user.role === "PLATFORM_MANAGER") {
         const { id } = req.params;
-        const { _id, nombre, apellido, foto, email, password, historialReservas, historialServiciosUtilizados, estado, ...resto } = req.body;
-        const registro = await Registro.findByIdAndUpdate(id, resto);
+        const usuario = await Registro.findById(id);
+
+        const role = "HOTEL_ADMINISTRATION";
+        const registro = await Registro.findByIdAndUpdate(id, { role: role });
+
+        const buscar = await ListaEspera.findOne({ idUsuario: usuario._id });
+
+        if (buscar) {
+            await ListaEspera.findByIdAndDelete(buscar._id);
+        } else {
+            console.log("No se encontró el usuario en la lista de espera");
+        }
 
         const registroActualizado = await Registro.findById(id);
 
