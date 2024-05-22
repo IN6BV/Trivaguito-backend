@@ -4,7 +4,8 @@ import { postHabitacion,
     getHabitaciones,
     getHabitacion,
     putHabitacion,
-    deleteHabitacion
+    deleteHabitacion,
+    getHabitationsFromHotel
 } from "./habitacion.controller.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 
@@ -22,7 +23,7 @@ router.post(
     ], postHabitacion);
 
 router.get("/getHabitaciones", validarJWT, getHabitaciones);
-
+router.get("/getHabitationsFromHotel", validarJWT, getHabitationsFromHotel);
 router.get("/getHabitacion/:id", validarJWT, getHabitacion);
 
 router.put("/updateHabitacion/:id", validarJWT, putHabitacion);
